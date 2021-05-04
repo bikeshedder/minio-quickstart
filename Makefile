@@ -9,6 +9,7 @@ default:
 	@echo - uninstall
 	@echo - start
 	@echo - stop
+	@echo - restart
 
 install: minio-console.env
 	docker-compose up -d minio
@@ -33,6 +34,9 @@ start:
 
 stop:
 	docker-compose stop
+
+restart:
+	docker-compose restart
 
 minio-console.env:
 	echo "CONSOLE_PBKDF_PASSPHRASE=$(shell bash ./random-password.sh)" > minio-console.env
