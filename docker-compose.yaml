@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+
+  minio:
+    image: minio/minio:RELEASE.2021-04-27T23-46-03Z.release.0033eb96
+    env_file:
+      - .env
+    environment:
+      MINIO_BROWSER: "on"
+    volumes:
+      - minio_data:/data
+    expose:
+      - "9000"
+    ports:
+      - 9000:9000
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio-console:
+    image: minio/console:v0.6.8
+    env_file:
+      - minio-console.env
+      - .env
+    environment:
+      CONSOLE_MINIO_SERVER: http://minio:9000
+    command: server
+    expose:
+      - "9090"
+    ports:
+      - 9090:9090
+
+  mc:
+    image: minio/mc:RELEASE.2021-04-22T17-40-00Z
+    env_file:
+      - .env
+    volumes:
+      - mc_data:/root/.mc
+    depends_on:
+      - minio
+
+volumes:
+  minio_data:
+  mc_data:
